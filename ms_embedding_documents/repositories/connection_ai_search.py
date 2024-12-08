@@ -4,7 +4,7 @@ from azure.search.documents.indexes import SearchIndexClient
 from azure.search.documents.indexes.models import SearchIndex, SimpleField, SearchableField
 import os
 from dotenv import load_dotenv
-from service.extract_contents import extract_txt, extract_pdf 
+from ms_embedding_documents.repositories.connection_ai_search import extract_txt, extract_pdf
 
 load_dotenv()
 
