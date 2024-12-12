@@ -7,7 +7,7 @@ from datetime import datetime
 import os
 import sys
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from ms_embedding_documents.service.extract_contents import extract_pdf, extract_txt
+from service.extract_contents import extract_pdf, extract_txt
 
 load_dotenv()
 
