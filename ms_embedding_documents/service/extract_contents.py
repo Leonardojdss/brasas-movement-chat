@@ -12,8 +12,3 @@ def extract_pdf(file):
         text += page.extract_text()
     print(text)
     return text
-
-# teste
-pdf_teste = "C:/Users/leona/brasas-movement-chat-ia/ms-embedding-documents/arquivos_teste/brasas_nossa_missao.pdf"
-conteudo = extract_pdf(pdf_teste)
-print(conteudo)
