@@ -12,11 +12,9 @@ from repositories.connection_ai_search import connection_ia_search
 load_dotenv()
 
 def embedd_documents(conteudo):
-    vectorstore = InMemoryVectorStore.from_texts(
-    [conteudo],
-    embedding=connection_openai_Embeddings(),
-    )
-    return vectorstore
+    embeddings = connection_openai_Embeddings()
+    vectors = embeddings.embed_documents([conteudo])
+    return vectors
 
 
 def indexar_arquivos(arquivo):
@@ -37,21 +35,22 @@ def indexar_arquivos(arquivo):
 
     conteudo_embedding = embedd_documents(conteudo)
 
-    # documentos.append({
-    #     "id": str(id),
-    #     "titulo_do_arquivo": titulo,
-    #     "conteudo": conteudo_embedding,
-    #     "data": datetime.utcnow().isoformat() + "Z",
-    # })
+    documentos.append({
+        "id": str(id),
+        "titulo_do_arquivo": titulo,
+        "conteudo": conteudo_embedding,
+        "data": datetime.utcnow().isoformat() + "Z",
+    })
 
-    print(conteudo_embedding)
+    #print(conteudo_embedding)
 
     # Indexar os documentos
-    # if documentos:
-    #     resultado = search_client.upload_documents(documents=documentos)
-    #     print("Documentos indexados:", resultado)
-    # else:
-    #     print("Nenhum documento para indexar.")
+    if documentos:
+        resultado = search_client.upload_documents(documents=documentos)
+        print("Documentos indexados:", resultado)
+    else:
+        print("Nenhum documento para indexar.")
 
-arquivo = "C:/Users/leona/brasas-movement-chat-ia/ms_embedding_documents/arquivos_teste/brasas_college.pdf"
-indexar_arquivos(arquivo)
+# teste
+# arquivo = "C:/Users/leona/brasas-movement-chat-ia/ms_embedding_documents/arquivos_teste/brasas_college.pdf"
+# indexar_arquivos(arquivo)
