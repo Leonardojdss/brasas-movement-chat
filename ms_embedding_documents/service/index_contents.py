@@ -1,16 +1,22 @@
-from repositories.connection_ai_search import connection_ia_search
+import os
+import sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from datetime import datetime
-#import os
-#import sys
-#sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from service.extract_contents import extract_pdf, extract_txt
 import random
 from dotenv import load_dotenv
-from langchain_openai import AzureOpenAIEmbeddings
+from langchain_core.vectorstores import InMemoryVectorStore
+from repositories.connection_openai import connection_openai_Embeddings
+from repositories.connection_ai_search import connection_ia_search
 
 load_dotenv()
 
 def embedd_documents(conteudo):
+    vectorstore = InMemoryVectorStore.from_texts(
+    [conteudo],
+    embedding=connection_openai_Embeddings(),
+    )
+    return vectorstore
 
 
 def indexar_arquivos(arquivo):
@@ -29,18 +35,23 @@ def indexar_arquivos(arquivo):
 
     id = random.randint(0, 1000000)  # Gera um ID aleatório entre 0 e 1.000.000
 
-    documentos.append({
-        "id": str(id),
-        "titulo_do_arquivo": titulo,
-        "conteudo": conteudo,
-        "data": datetime.utcnow().isoformat() + "Z",
-    })
+    conteudo_embedding = embedd_documents(conteudo)
 
-    print(documentos)
+    # documentos.append({
+    #     "id": str(id),
+    #     "titulo_do_arquivo": titulo,
+    #     "conteudo": conteudo_embedding,
+    #     "data": datetime.utcnow().isoformat() + "Z",
+    # })
+
+    print(conteudo_embedding)
 
     # Indexar os documentos
-    if documentos:
-        resultado = search_client.upload_documents(documents=documentos)
-        print("Documentos indexados:", resultado)
-    else:
-        print("Nenhum documento para indexar.")
+    # if documentos:
+    #     resultado = search_client.upload_documents(documents=documentos)
+    #     print("Documentos indexados:", resultado)
+    # else:
+    #     print("Nenhum documento para indexar.")
+
+arquivo = "C:/Users/leona/brasas-movement-chat-ia/ms_embedding_documents/arquivos_teste/brasas_college.pdf"
+indexar_arquivos(arquivo)
