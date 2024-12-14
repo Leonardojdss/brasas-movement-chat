@@ -5,9 +5,10 @@ from datetime import datetime
 from service.extract_contents import extract_pdf, extract_txt
 import random
 from dotenv import load_dotenv
-from langchain_core.vectorstores import InMemoryVectorStore
 from repositories.connection_openai import connection_openai_Embeddings
 from repositories.connection_ai_search import connection_ia_search
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+import json
 
 load_dotenv()
 
@@ -31,26 +32,29 @@ def indexar_arquivos(arquivo):
     else:
         print(f"Formato não suportado: {arquivo}")
 
-    id = random.randint(0, 1000000)  # Gera um ID aleatório entre 0 e 1.000.000
+    text_splitter = RecursiveCharacterTextSplitter(
+    chunk_size=100,
+    chunk_overlap=20,
+    length_function=len,
+    is_separator_regex=False)
 
-    conteudo_embedding = embedd_documents(conteudo)
+    texts = text_splitter.create_documents([conteudo])
 
-    documentos.append({
-        "id": str(id),
-        "titulo_do_arquivo": titulo,
-        "conteudo": conteudo_embedding,
-        "data": datetime.utcnow().isoformat() + "Z",
-    })
+    for text in texts:
+        
+        conteudo_embedding = embedd_documents(text.page_content)
 
-    #print(conteudo_embedding)
+        documentos.append({
+            "id": str(random.randint(0, 1000000)),  # Gera um ID aleatório entre 0 e 1.000.000)
+            "titulo_do_arquivo": titulo,
+            "conteudo": json.dumps(conteudo_embedding),
+            "data": datetime.now().isoformat() + "Z",
+        })
 
-    # Indexar os documentos
-    if documentos:
-        resultado = search_client.upload_documents(documents=documentos)
-        print("Documentos indexados:", resultado)
-    else:
-        print("Nenhum documento para indexar.")
+    # enviar os documentos para ia search
+    search_client.upload_documents(documents=documentos)
+    print("Documentos indexados com sucesso.")
 
 # teste
-# arquivo = "C:/Users/leona/brasas-movement-chat-ia/ms_embedding_documents/arquivos_teste/brasas_college.pdf"
-# indexar_arquivos(arquivo)
+arquivo = "C:/Users/leona/brasas-movement-chat-ia/ms_embedding_documents/arquivos_teste/brasas_nossa_missao.pdf"
+indexar_arquivos(arquivo)

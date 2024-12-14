@@ -15,8 +15,5 @@ def connection_ia_search():
     API_KEY = os.getenv("AZURE_AI_SEARCH_KEY")
     INDEX_NAME = "brasas-documents"
 
-    print(ENDPOINT)
-    print(API_KEY)
-
     search_client = SearchClient(endpoint=ENDPOINT, index_name=INDEX_NAME, credential=AzureKeyCredential(API_KEY))
     return search_client
