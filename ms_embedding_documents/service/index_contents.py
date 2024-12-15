@@ -6,7 +6,7 @@ from service.extract_contents import extract_pdf, extract_txt
 import random
 from dotenv import load_dotenv
 from repositories.connection_openai import connection_openai_Embeddings
-from repositories.connection_ai_search import connection_ia_search
+from repositories.connection_postgreSQL import connection_postgreSQL
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 import json
 
@@ -15,11 +15,16 @@ load_dotenv()
 def embedd_documents(conteudo):
     embeddings = connection_openai_Embeddings()
     vectors = embeddings.embed_documents([conteudo])
-    return vectors
+    return vectors[0]
 
 
 def indexar_arquivos(arquivo):
-    search_client = connection_ia_search()
+
+    USER_POSTGRESQL = os.getenv("USER_POSTGRESQL")
+    PASSWORD_POSTGRESQL = os.getenv("PASSWORD_POSTGRESQL")
+    ENDPOINT_POSTGRESQL = os.getenv("ENDPOINT_POSTGRESQL")
+
+    conn, cur = connection_postgreSQL(USER_POSTGRESQL, PASSWORD_POSTGRESQL, ENDPOINT_POSTGRESQL)
     documentos = []
     
     #extrair titulo do arquivo
@@ -45,14 +50,24 @@ def indexar_arquivos(arquivo):
         conteudo_embedding = embedd_documents(text.page_content)
 
         documentos.append({
-            "id": str(random.randint(0, 1000000)),  # Gera um ID aleatório entre 0 e 1.000.000)
+            "id": datetime.now().strftime("%d%m%Y%H%M%S"),  # Gera um ID com o formato dia, mês, ano, hora, minuto, segundo
             "titulo_do_arquivo": titulo,
-            "conteudo": json.dumps(conteudo_embedding),
-            "data": datetime.now().isoformat() + "Z",
-        })
+            "conteudo": json.dumps(conteudo_embedding)
+            })
 
-    # enviar os documentos para ia search
-    search_client.upload_documents(documents=documentos)
+    # # enviar os documentos para ia search
+    # search_client.upload_documents(documents=documentos)
+    # print("Documentos indexados com sucesso.")
+
+    # inserir os documentos no banco de dados postgresql com vector extension   
+    for documento in documentos:
+        try:
+            cur.execute(
+                f"INSERT INTO brasas_vector_db (id, titulo, conteudo) VALUES ('{documento['id']}', '{documento['titulo_do_arquivo']}', '{documento['conteudo']}')"
+            )
+            conn.commit()
+        except Exception as e:
+            print("Documentos indexados não foram salvos no banco, erro: ", e)
     print("Documentos indexados com sucesso.")
 
 # teste
