@@ -1,2 +1,2 @@
-# micro serviço para vetorizar arquivos e salvar no azure ia search
+# micro serviço para vetorizar arquivos e salvar no azure postgreSQL
 
