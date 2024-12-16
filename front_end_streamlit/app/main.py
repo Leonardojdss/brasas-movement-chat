@@ -22,7 +22,7 @@ def client_openai(messages, contexto):
 
 def get_contexto_brasas(fala_usuario):
     body = {"text": f"{fala_usuario}"}
-    request = requests.post("https://ms-embedding-documents.azurewebsites.net/ms_embedding/search_similarity", json=body)
+    request = requests.post("https://host_app_service/ms_embedding/search_similarity", json=body)
     contexto = request.json()
     return contexto
 
