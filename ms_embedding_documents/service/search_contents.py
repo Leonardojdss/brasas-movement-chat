@@ -13,9 +13,11 @@ def embedd_pergunta(pergunta):
     return vectors[0]
 
 # Realizar a pesquisa de conteúdo indexado
-def pesquisar_conteudo_indexado(pergunta_vetorizada):
+def pesquisar_conteudo_indexado(pergunta):
 
-    pergunta_vetorizada = json.dumps(pergunta_vetorizada)
+    pergunta_vetorizada = embedd_pergunta(pergunta)
+
+    pergunta_vetorizada_ajustada = json.dumps(pergunta_vetorizada)
 
     USER_POSTGRESQL = os.getenv("USER_POSTGRESQL")
     PASSWORD_POSTGRESQL = os.getenv("PASSWORD_POSTGRESQL")
@@ -27,7 +29,7 @@ def pesquisar_conteudo_indexado(pergunta_vetorizada):
         cur.execute("SELECT conteudo_vetorizada <=> %s AS distance, metadado \
                     FROM brasas_vector_db \
                     ORDER BY distance ASC \
-                    LIMIT 10", (pergunta_vetorizada,))
+                    LIMIT 10", (pergunta_vetorizada_ajustada,))
         results = cur.fetchall()
         conn.commit()
         return results
@@ -35,6 +37,6 @@ def pesquisar_conteudo_indexado(pergunta_vetorizada):
         print(f"Error: {e}")
         return None
         
-pergunta = "quais são todas as 5 missões do brasas"
-pergunta_ve=embedd_pergunta(pergunta)
-print(pesquisar_conteudo_indexado(pergunta_ve))
+# teste        
+# pergunta = "quais são todas as 5 missões do brasas"
+# print(pesquisar_conteudo_indexado(pergunta))

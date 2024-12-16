@@ -12,7 +12,7 @@ import json
 load_dotenv()
 
 # converter o conteudo do arquivo em um vetor
-def embedd_documents(conteudo):
+def embedd_documentos(conteudo):
     embeddings = connection_openai_Embeddings()
     vectors = embeddings.embed_documents([conteudo])
     return vectors[0]
@@ -47,7 +47,7 @@ def indexar_arquivos(arquivo):
 
     for text in texts:
         
-        conteudo_embedding = embedd_documents(text.page_content)
+        conteudo_embedding = embedd_documentos(text.page_content)
 
         documentos.append({
             "id": datetime.now().strftime("%d%m%Y%H%M%S"),  # Gera um ID com o formato dia, mês, ano, hora, minuto, segundo
@@ -76,5 +76,5 @@ def indexar_arquivos(arquivo):
         print("Documentos indexados com sucesso.")
 
 # teste
-arquivo = "C:/Users/leona/brasas-movement-chat-ia/ms_embedding_documents/arquivos_teste/brasas_nossa_missao.pdf"
-indexar_arquivos(arquivo)
+# arquivo = "C:/Users/leona/brasas-movement-chat-ia/ms_embedding_documents/arquivos_teste/brasas_nossa_missao.pdf"
+# indexar_arquivos(arquivo)
