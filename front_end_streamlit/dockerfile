@@ -15,15 +15,12 @@ ENV PYTHONUNBUFFERED=1
 RUN ln -s /usr/bin/python3 /usr/bin/python
 RUN ln -s /usr/bin/pip3 /usr/bin/pip
 
-# Install PostgreSQL development package and gcc
-RUN apt-get update && apt-get install -y postgresql-server-dev-all gcc
-
 # Set the working directory
-WORKDIR /ms_embedding_documents
+WORKDIR /front_end_streamlit
 
 # Install Python dependencies
 COPY requirements.txt .
-RUN pip install -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the .env file
 COPY .env .
@@ -32,7 +29,7 @@ COPY .env .
 COPY . .
 
 # Expose API port
-EXPOSE 8000
+EXPOSE 8501
 
 # Run the application
-CMD ["uvicorn", "app.main.py", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+CMD ["streamlit", "run", "app/main.py"]
